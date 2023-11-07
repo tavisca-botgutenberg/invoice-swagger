@@ -1,0 +1,790 @@
+{
+	"openapi": "3.0.1",
+	"info": {
+		"title": "nextgen_invoice_api",
+		"description": "Invoice service is a subsystem of NextGen Order System that generates invoice for every order primarily used for keeping track of all the sales transactions by any business organization with its customers or other business.",
+		"version": "v1"
+	},
+	"paths": {
+		"/api/v1.0/health": {
+			"get": {
+				"tags": [
+					"HealthCheck"
+				],
+				"parameters": [
+					{
+						"name": "cnx-tenantid",
+						"in": "header",
+						"description": "TenantId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "cnx-correlationid",
+						"in": "header",
+						"description": "CorrelationId",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Success"
+					}
+				}
+			}
+		},
+		"/api/v1.0/invoice": {
+			"post": {
+				"tags": [
+					"Invoice"
+				],
+				"parameters": [
+					{
+						"name": "cnx-tenantid",
+						"in": "header",
+						"description": "TenantId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "cnx-correlationid",
+						"in": "header",
+						"description": "CorrelationId",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json-patch+json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateInvoiceRequest"
+							}
+						},
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateInvoiceRequest"
+							}
+						},
+						"text/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateInvoiceRequest"
+							}
+						},
+						"application/*+json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateInvoiceRequest"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Success"
+					}
+				}
+			},
+			"get": {
+				"tags": [
+					"Invoice"
+				],
+				"summary": "Get invoices by order id",
+				"description": "The API returns the list of invoice details associated with particular order in the API response.",
+				"parameters": [
+					{
+						"name": "orderId",
+						"in": "query",
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "cnx-tenantid",
+						"in": "header",
+						"description": "TenantId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "cnx-correlationid",
+						"in": "header",
+						"description": "CorrelationId",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Success",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/GetInvoiceResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Bad Request",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorInfo"
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "Not Found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorInfo"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/v1.0/invoice/{invoiceId}/items": {
+			"post": {
+				"tags": [
+					"InvoiceItem"
+				],
+				"parameters": [
+					{
+						"name": "invoiceId",
+						"in": "path",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "cnx-tenantid",
+						"in": "header",
+						"description": "TenantId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "cnx-correlationid",
+						"in": "header",
+						"description": "CorrelationId",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json-patch+json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateInvoiceItemsRequest"
+							}
+						},
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateInvoiceItemsRequest"
+							}
+						},
+						"text/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateInvoiceItemsRequest"
+							}
+						},
+						"application/*+json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateInvoiceItemsRequest"
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Success"
+					}
+				}
+			}
+		}
+	},
+	"components": {
+		"schemas": {
+			"AccountingEntity": {
+				"enum": [
+					0,
+					1,
+					2
+				],
+				"type": "integer",
+				"format": "int32"
+			},
+			"ActionType": {
+				"enum": [
+					0,
+					1
+				],
+				"type": "integer",
+				"format": "int32"
+			},
+			"Address": {
+				"type": "object",
+				"properties": {
+					"line1": {
+						"type": "string",
+						"nullable": true
+					},
+					"line2": {
+						"type": "string",
+						"nullable": true
+					},
+					"cityName": {
+						"type": "string",
+						"nullable": true
+					},
+					"state": {
+						"$ref": "#/components/schemas/Location"
+					},
+					"countryCode": {
+						"type": "string",
+						"nullable": true
+					},
+					"postalCode": {
+						"type": "string",
+						"nullable": true
+					}
+				},
+				"additionalProperties": false
+			},
+			"Adjustment": {
+				"type": "object",
+				"properties": {
+					"type": {
+						"type": "string",
+						"nullable": true
+					},
+					"description": {
+						"type": "string",
+						"nullable": true
+					}
+				},
+				"additionalProperties": false
+			},
+			"CostDetails": {
+				"type": "object",
+				"properties": {
+					"costType": {
+						"$ref": "#/components/schemas/CostType"
+					},
+					"payer": {
+						"$ref": "#/components/schemas/AccountingEntity"
+					},
+					"receiver": {
+						"$ref": "#/components/schemas/AccountingEntity"
+					},
+					"product": {
+						"$ref": "#/components/schemas/Product"
+					},
+					"fee": {
+						"$ref": "#/components/schemas/Fee"
+					},
+					"offer": {
+						"$ref": "#/components/schemas/Offer"
+					},
+					"adjustment": {
+						"$ref": "#/components/schemas/Adjustment"
+					}
+				},
+				"additionalProperties": false
+			},
+			"CostType": {
+				"enum": [
+					0,
+					1,
+					2,
+					3
+				],
+				"type": "integer",
+				"format": "int32"
+			},
+			"CreateInvoiceItemsRequest": {
+				"type": "object",
+				"properties": {
+					"invoiceItems": {
+						"type": "array",
+						"items": {
+							"$ref": "#/components/schemas/InvoiceItem"
+						},
+						"nullable": true
+					}
+				},
+				"additionalProperties": false
+			},
+			"CreateInvoiceRequest": {
+				"type": "object",
+				"properties": {
+					"orderId": {
+						"type": "string",
+						"nullable": true
+					},
+					"type": {
+						"$ref": "#/components/schemas/InvoiceType"
+					},
+					"currency": {
+						"type": "string",
+						"nullable": true
+					},
+					"pointsCurrency": {
+						"type": "string",
+						"nullable": true
+					},
+					"currencyCostFactor": {
+						"$ref": "#/components/schemas/CurrencyCostFactor"
+					},
+					"cash": {
+						"type": "number",
+						"format": "double"
+					},
+					"points": {
+						"type": "number",
+						"format": "double"
+					},
+					"invoiceItems": {
+						"type": "array",
+						"items": {
+							"$ref": "#/components/schemas/InvoiceItem"
+						},
+						"nullable": true
+					}
+				},
+				"additionalProperties": false
+			},
+			"CurrencyCostFactor": {
+				"type": "object",
+				"properties": {
+					"value": {
+						"type": "number",
+						"format": "double"
+					},
+					"operator": {
+						"$ref": "#/components/schemas/Operation"
+					}
+				},
+				"additionalProperties": false
+			},
+			"ErrorInfo": {
+				"type": "object",
+				"properties": {
+					"code": {
+						"type": "string",
+						"nullable": true
+					},
+					"message": {
+						"type": "string",
+						"nullable": true
+					},
+					"httpStatusCode": {
+						"$ref": "#/components/schemas/HttpStatusCode"
+					},
+					"info": {
+						"type": "array",
+						"items": {
+							"$ref": "#/components/schemas/Info"
+						},
+						"nullable": true,
+						"readOnly": true
+					}
+				},
+				"additionalProperties": false
+			},
+			"Fee": {
+				"type": "object",
+				"properties": {
+					"type": {
+						"type": "string",
+						"nullable": true
+					}
+				},
+				"additionalProperties": false
+			},
+			"FormOfPayment": {
+				"enum": [
+					0,
+					1
+				],
+				"type": "integer",
+				"format": "int32"
+			},
+			"GetInvoiceResponse": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"nullable": true
+					},
+					"orderId": {
+						"type": "string",
+						"nullable": true
+					},
+					"type": {
+						"$ref": "#/components/schemas/InvoiceType"
+					},
+					"number": {
+						"type": "string",
+						"nullable": true
+					},
+					"status": {
+						"$ref": "#/components/schemas/Status"
+					},
+					"currency": {
+						"type": "string",
+						"nullable": true
+					},
+					"pointsCurrency": {
+						"type": "string",
+						"nullable": true
+					},
+					"customer": {
+						"$ref": "#/components/schemas/Person"
+					},
+					"seller": {
+						"$ref": "#/components/schemas/Person"
+					},
+					"currencyCostFactor": {
+						"$ref": "#/components/schemas/CurrencyCostFactor"
+					},
+					"createdOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"lastUpdatedOn": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"createdBy": {
+						"type": "string",
+						"nullable": true
+					},
+					"cash": {
+						"type": "number",
+						"format": "double"
+					},
+					"points": {
+						"type": "number",
+						"format": "double"
+					},
+					"items": {
+						"type": "array",
+						"items": {
+							"$ref": "#/components/schemas/InvoiceItem"
+						},
+						"nullable": true
+					}
+				},
+				"additionalProperties": false
+			},
+			"HttpStatusCode": {
+				"enum": [
+					100,
+					101,
+					102,
+					103,
+					200,
+					201,
+					202,
+					203,
+					204,
+					205,
+					206,
+					207,
+					208,
+					226,
+					300,
+					301,
+					302,
+					303,
+					304,
+					305,
+					306,
+					307,
+					308,
+					400,
+					401,
+					402,
+					403,
+					404,
+					405,
+					406,
+					407,
+					408,
+					409,
+					410,
+					411,
+					412,
+					413,
+					414,
+					415,
+					416,
+					417,
+					421,
+					422,
+					423,
+					424,
+					426,
+					428,
+					429,
+					431,
+					451,
+					500,
+					501,
+					502,
+					503,
+					504,
+					505,
+					506,
+					507,
+					508,
+					510,
+					511
+				],
+				"type": "integer",
+				"format": "int32"
+			},
+			"Info": {
+				"type": "object",
+				"properties": {
+					"code": {
+						"type": "string",
+						"nullable": true
+					},
+					"message": {
+						"type": "string",
+						"nullable": true
+					}
+				},
+				"additionalProperties": false
+			},
+			"InvoiceItem": {
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"nullable": true
+					},
+					"type": {
+						"$ref": "#/components/schemas/InvoiceItemType"
+					},
+					"cash": {
+						"type": "number",
+						"format": "double"
+					},
+					"points": {
+						"type": "number",
+						"format": "double"
+					},
+					"actionType": {
+						"$ref": "#/components/schemas/ActionType"
+					},
+					"costDetails": {
+						"$ref": "#/components/schemas/CostDetails"
+					},
+					"paymentDetails": {
+						"$ref": "#/components/schemas/PaymentDetails"
+					},
+					"refundDetails": {
+						"$ref": "#/components/schemas/PaymentDetails"
+					},
+					"orderItemId": {
+						"type": "string",
+						"nullable": true
+					},
+					"productInvoiceItemId": {
+						"type": "string",
+						"nullable": true
+					}
+				},
+				"additionalProperties": false
+			},
+			"InvoiceItemType": {
+				"enum": [
+					0,
+					1,
+					2,
+					3
+				],
+				"type": "integer",
+				"format": "int32"
+			},
+			"InvoiceType": {
+				"enum": [
+					0,
+					1
+				],
+				"type": "integer",
+				"format": "int32"
+			},
+			"Location": {
+				"type": "object",
+				"properties": {
+					"code": {
+						"type": "string",
+						"nullable": true
+					},
+					"name": {
+						"type": "string",
+						"nullable": true
+					}
+				},
+				"additionalProperties": false
+			},
+			"Name": {
+				"type": "object",
+				"properties": {
+					"first": {
+						"type": "string",
+						"nullable": true
+					},
+					"middle": {
+						"type": "string",
+						"nullable": true
+					},
+					"last": {
+						"type": "string",
+						"nullable": true
+					},
+					"title": {
+						"type": "string",
+						"nullable": true
+					},
+					"suffix": {
+						"type": "string",
+						"nullable": true
+					}
+				},
+				"additionalProperties": false
+			},
+			"Offer": {
+				"type": "object",
+				"properties": {
+					"type": {
+						"type": "string",
+						"nullable": true
+					},
+					"code": {
+						"type": "string",
+						"nullable": true
+					},
+					"description": {
+						"type": "string",
+						"nullable": true
+					}
+				},
+				"additionalProperties": false
+			},
+			"Operation": {
+				"enum": [
+					0,
+					1
+				],
+				"type": "integer",
+				"format": "int32"
+			},
+			"PaymentDetails": {
+				"type": "object",
+				"properties": {
+					"formOfPayment": {
+						"$ref": "#/components/schemas/FormOfPayment"
+					},
+					"transactionId": {
+						"type": "string",
+						"nullable": true
+					}
+				},
+				"additionalProperties": false
+			},
+			"Person": {
+				"type": "object",
+				"properties": {
+					"name": {
+						"$ref": "#/components/schemas/Name"
+					},
+					"billingAddress": {
+						"$ref": "#/components/schemas/Address"
+					},
+					"phone": {
+						"$ref": "#/components/schemas/Phone"
+					}
+				},
+				"additionalProperties": false
+			},
+			"Phone": {
+				"type": "object",
+				"properties": {
+					"type": {
+						"$ref": "#/components/schemas/PhoneType"
+					},
+					"number": {
+						"type": "string",
+						"nullable": true
+					},
+					"countryCode": {
+						"type": "string",
+						"nullable": true
+					},
+					"areaCode": {
+						"type": "string",
+						"nullable": true
+					}
+				},
+				"additionalProperties": false
+			},
+			"PhoneType": {
+				"enum": [
+					0,
+					1,
+					2,
+					3,
+					4
+				],
+				"type": "integer",
+				"format": "int32"
+			},
+			"Product": {
+				"type": "object",
+				"properties": {
+					"linkedInvoiceItemIds": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						},
+						"nullable": true
+					}
+				},
+				"additionalProperties": false
+			},
+			"Status": {
+				"enum": [
+					0,
+					1,
+					2,
+					3
+				],
+				"type": "integer",
+				"format": "int32"
+			}
+		}
+	}
+}
